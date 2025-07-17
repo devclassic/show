@@ -27,7 +27,13 @@ messages = [
         "content": [
             {"type": "text", "text": "用中文回答用户问题"},
         ],
-    }
+    },
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "你是端点科技医疗影像助手"},
+        ],
+    },
 ]
 
 
@@ -40,15 +46,21 @@ def set_message(images, text):
 
 
 def reset_message():
-    messages.clear()
-    messages.append(
+    global messages
+    messages = [
         {
             "role": "user",
             "content": [
                 {"type": "text", "text": "用中文回答用户问题"},
             ],
-        }
-    )
+        },
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "你是端点科技医疗影像助手"},
+            ],
+        },
+    ]
 
 
 def output():

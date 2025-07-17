@@ -33,6 +33,7 @@
 <script setup>
   import { reactive, useTemplateRef, onMounted } from 'vue'
   import http from '../../../utils/http'
+  import { ElMessage } from 'element-plus'
 
   const state = reactive({
     loading: false,
@@ -76,6 +77,7 @@
     state.text = ''
     const res = await http.post('/api/image/reset')
     console.log(res.data)
+    ElMessage.success('重置成功')
   }
 </script>
 
