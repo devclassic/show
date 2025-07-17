@@ -2,3 +2,6 @@
 build
 dist
 main.spec
+uploads
+models
+__pycache__
