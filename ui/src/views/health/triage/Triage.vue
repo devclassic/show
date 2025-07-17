@@ -1,7 +1,22 @@
 <template>
   <div class="title">分诊导诊</div>
+  <body-map @change="bodyNameChange" />
   <div class="input">
-    <el-input v-model="state.text" :rows="5" type="textarea" placeholder="请输入症状用于智能导诊" />
+    <el-form label-width="auto">
+      <el-form-item label="年龄">
+        <el-input v-model="state.sex" placeholder="请输入年龄" />
+      </el-form-item>
+      <el-form-item label="年龄">
+        <el-input v-model="state.age" placeholder="请输入年龄" />
+      </el-form-item>
+      <el-form-item label="症状">
+        <el-input
+          v-model="state.text"
+          :rows="5"
+          type="textarea"
+          placeholder="请输入症状用于智能导诊" />
+      </el-form-item>
+    </el-form>
   </div>
   <div class="buttons">
     <input ref="file" type="file" class="file" />
@@ -13,18 +28,25 @@
 </template>
 
 <script setup>
-  import { reactive, useTemplateRef } from 'vue'
+  import { reactive, useTemplateRef, nextTick } from 'vue'
   import markdownit from 'markdown-it'
   import http from '../../../utils/http'
+  import BodyMap from './bodymap/BodyMap.vue'
 
   const state = reactive({
     loading: false,
+    sex: '男',
+    age: 30,
     text: '',
     fileRef: useTemplateRef('file'),
     result: '',
   })
 
   const md = markdownit()
+
+  function bodyNameChange(name) {
+    state.text = `患者性别：${state.sex}\n患者年龄：${state.age}\n患者症状：${name + '不舒服'}`
+  }
 
   function openFile() {
     state.fileRef.click()
@@ -34,6 +56,7 @@
     const file = state.fileRef.files[0]
     if (!file) {
       ElMessage.error('请选择门诊数据')
+      return
     }
     state.loading = true
     const formData = new FormData()
@@ -42,6 +65,11 @@
     const res = await http.post('/api/triage', formData)
     state.result = md.render(res.data.data.replace(/<think>[\s\S]*?<\/think>/g, ''))
     state.loading = false
+    await nextTick()
+    document.documentElement.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    })
   }
 
   function clean() {
