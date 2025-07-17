@@ -27,6 +27,7 @@
         <el-menu-item index="/health/triage">分诊导诊</el-menu-item>
         <el-menu-item index="/health/assist">辅助诊疗</el-menu-item>
         <el-menu-item index="/health/check">内涵质控</el-menu-item>
+        <el-menu-item index="/health/image">医学影像</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="" @click="openSettings">设置</el-menu-item>
     </el-menu>

@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from httpx import AsyncClient
 import os
 import shutil
+from typing import List
+import lingshu
 from asr import model
 
 apibase = "http://localhost:8080/v1"
@@ -188,6 +190,31 @@ async def form(request: Request):
         res = res.json()
     text = res.get("answer")
     return {"success": True, "message": "语音拆分成功", "data": text}
+
+
+@app.post("/api/image")
+async def image(files: List[UploadFile] = File([]), text: str = Form()):
+    """
+    影像识别接口
+    """
+    os.path.exists("uploads") or os.makedirs("uploads")
+    images = []
+    for file in files:
+        filename = os.path.join("uploads", file.filename)
+        with open(filename, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+            images.append(filename)
+    lingshu.set_message(images, text)
+    return {"success": True, "message": "影像识别成功", "data": lingshu.output()}
+
+
+@app.post("/api/image/reset")
+async def image_reset():
+    """
+    影像识别接口重置
+    """
+    lingshu.reset_message()
+    return {"success": True, "message": "影像识别重置成功", "data": True}
 
 
 app.mount("/", StaticFiles(directory="public", html=True))

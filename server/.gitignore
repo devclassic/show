@@ -5,3 +5,4 @@ main.spec
 uploads
 models
 __pycache__
+cache
