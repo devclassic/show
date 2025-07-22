@@ -105,7 +105,6 @@
       content: res.data.data.text,
     })
     state.history = res.data.data.history
-    console.log(state.history)
     state.loading = false
     state.file.value = ''
   }
