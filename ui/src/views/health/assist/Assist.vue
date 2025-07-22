@@ -7,6 +7,7 @@
     <el-button type="primary" :loading="state.loading" @click="submit">辅助诊疗</el-button>
     <el-button type="primary" @click="record">{{ state.btnRecordText }}</el-button>
     <el-button type="primary" @click="clean">清空内容</el-button>
+    <span class="status">{{ state.status }}</span>
   </div>
   <div ref="content" class="content">
     <div v-for="item in state.messages" :key="item.role">
@@ -24,6 +25,7 @@
 
   const state = reactive({
     contentRef: useTemplateRef('content'),
+    status: '',
     loading: false,
     text: '',
     btnRecordText: '开始收音',
@@ -48,14 +50,15 @@
       return
     }
     state.messages.push({ role: 'user', content: state.text })
+    const q = state.text
+    state.text = ''
     await nextTick()
     state.contentRef.scrollTo({
       top: state.contentRef.scrollHeight,
       behavior: 'smooth',
     })
     state.loading = true
-    const res = await http.post('/api/assist', { question: state.text })
-    console.log(res)
+    const res = await http.post('/api/assist', { question: q })
     const answer = res.data.data.replace(/<think>[\s\S]*?<\/think>/g, '')
     state.messages.push({ role: 'ai', content: md.render(answer) })
     await nextTick()
@@ -63,13 +66,7 @@
       top: state.contentRef.scrollHeight,
       behavior: 'smooth',
     })
-    state.text = ''
     state.loading = false
-  }
-
-  asr.ontext = text => {
-    console.log(text)
-    state.text = text
   }
 
   let isRecoding = false
@@ -91,11 +88,23 @@
         },
       )
     } else {
-      asr.stop(() => {
+      asr.stop(async () => {
         ElMessage.success('停止收音')
-        state.status = ''
+        state.status = '正在识别...'
         state.btnRecordText = '开始收音'
         isRecoding = false
+        //处理语音上传
+        const blob = asr.getWAVBlob()
+        const file = new File([blob], 'audio.wav')
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await http.post('/api/asr', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        state.status = ''
+        state.text = res.data.data[0].text
       })
     }
   }
@@ -114,6 +123,11 @@
 
   .buttons {
     margin-top: 10px;
+  }
+
+  .status {
+    margin-left: 10px;
+    color: #aaaaaa;
   }
 
   .content {

@@ -55,6 +55,31 @@
   }
 </script>
 
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  table,
+  th,
+  td {
+    border: 1px solid #ccc;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: left;
+  }
+
+  td {
+    padding: 10px;
+    text-align: left;
+  }
+</style>
+
 <style scoped>
   .title {
     font-size: 20px;

@@ -9,9 +9,12 @@ import asyncio
 import shutil
 from typing import List
 import lingshu
+import dotenv
 from asr import model
 
-apibase = "http://localhost:8080/v1"
+dotenv.load_dotenv()
+
+apibase = os.getenv("BASE_API")
 
 app = FastAPI()
 
@@ -29,7 +32,7 @@ async def triage(file: UploadFile = File(...), text: str = Form(...)):
     """
     分诊导诊接口
     """
-    token = "app-fyeJMnOW042Mccwr2dsTTdb4"
+    token = os.getenv("TOKEN_ZHINENGDAOZHEN")
     os.path.exists("uploads") or os.makedirs("uploads")
     filename = os.path.join("uploads", file.filename)
     with open(filename, "wb") as f:
@@ -86,7 +89,7 @@ async def assist(request: Request):
     """
     data = await request.json()
     question = data.get("question")
-    token = "app-RWL2ZXbQoXKE524bFSmfRb28"
+    token = os.getenv("TOKEN_FUZHUZHENLIAO")
     url = f"{apibase}/chat-messages"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -109,7 +112,7 @@ async def check(request: Request):
     """
     内涵质控接口
     """
-    token = "app-6klx0hvKgmvPcoScVA7CL2GY"
+    token = os.getenv("TOKEN_NEIHANZHIKONG")
 
     async def run_workflow(type, content, user, response_mode="blocking"):
         workflow_url = f"{apibase}/workflows/run"
@@ -158,7 +161,7 @@ async def asrg(request: Request):
     """
     data = await request.json()
     prompt = data.get("prompt")
-    token = "app-8gtJR5XbwXB9FrpYuqpttMlc"
+    token = os.getenv("TOKEN_DUIHUASHENGCHENG")
     url = f"{apibase}/chat-messages"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -183,7 +186,7 @@ async def form(request: Request):
     """
     data = await request.json()
     prompt = data.get("prompt")
-    token = "app-j1f1vYJsSZTzXz0yIu4BMttA"
+    token = os.getenv("TOKEN_YUYINBIAODAN")
     url = f"{apibase}/chat-messages"
     headers = {
         "Authorization": f"Bearer {token}",

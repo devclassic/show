@@ -63,11 +63,7 @@
       },
     ],
   })
-
-  onMounted(() => {
-    reset()
-  })
-
+  
   function openfile() {
     state.file.click()
   }
