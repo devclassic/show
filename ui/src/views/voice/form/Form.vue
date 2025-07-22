@@ -59,35 +59,6 @@
     },
   })
 
-  asr.ontext = async text => {
-    state.result = text
-    state.status = '正在处理...'
-    let prompt = `
-    <text>${text}</text>
-    请分析<text>中的内容
-    以JSON的形式输出，输出的JSON遵守以下的格式：
-    {
-        "xm":<姓名>,
-        "nl":<年龄>,
-        "xb":<性别>,
-        "sfzh":<身份证号>,
-        "lxfs":<联系方式>,
-        "zz":<症状>,
-        "zs":<主诉>,
-        "jws":<既往史>,
-        "grjzs":<个人家族史>
-    }
-    如果内容中没有对应的信息，请用""代替。
-    只输出JSON不要输出其他内容。
-    `
-    const res = await http.post('/api/form', { prompt })
-    let json = res.data.data.replace(/<think>[\s\S]*?<\/think>/g, '')
-    json = json.replace('```json', '').replace('```', '')
-    const data = JSON.parse(json)
-    state.form = data
-    state.status = ''
-  }
-
   let isRecoding = false
 
   function record() {
@@ -99,19 +70,56 @@
           state.status = '正在收音...'
           isRecoding = true
         },
-        () => {
+        async () => {
           ElMessage.error('收音错误')
-          state.status = ''
+          state.status = '正在处理...'
           state.btnRecordText = '开始收音'
           isRecoding = false
         },
       )
     } else {
-      asr.stop(() => {
+      asr.stop(async () => {
         ElMessage.success('停止收音')
-        state.status = ''
+        state.status = '正在识别...'
         state.btnRecordText = '开始收音'
         isRecoding = false
+        //处理语音上传
+        const blob = asr.getWAVBlob()
+        const file = new File([blob], 'audio.wav')
+        const formData = new FormData()
+        formData.append('file', file)
+        let res = await http.post('/api/asr', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        state.status = ''
+        state.result = res.data.data[0].text
+        state.status = '正在处理...'
+        const prompt = `
+        <text>${state.result}</text>
+        请分析<text>中的内容
+        以JSON的形式输出，输出的JSON遵守以下的格式：
+        {
+          "xm":<姓名>,
+          "nl":<年龄>,
+          "xb":<性别>,
+          "sfzh":<身份证号>,
+          "lxfs":<联系方式>,
+          "zz":<症状>,
+          "zs":<主诉>,
+          "jws":<既往史>,
+          "grjzs":<个人家族史>
+        }
+        如果内容中没有对应的信息，请用""代替。
+        只输出JSON不要输出其他内容。
+        `
+        res = await http.post('/api/form', { prompt })
+        let json = res.data.data.replace(/<think>[\s\S]*?<\/think>/g, '')
+        json = json.replace('```json', '').replace('```', '')
+        const data = JSON.parse(json)
+        state.form = data
+        state.status = ''
       })
     }
   }
