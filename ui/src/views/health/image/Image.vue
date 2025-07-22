@@ -52,6 +52,16 @@
     images: [],
     text: '',
     messages: [],
+    history: [
+      {
+        role: 'user',
+        content: [{ type: 'text', text: '用中文回答用户问题' }],
+      },
+      {
+        role: 'user',
+        content: [{ type: 'text', text: '你是端点科技医疗影像助手' }],
+      },
+    ],
   })
 
   onMounted(() => {
@@ -87,12 +97,15 @@
       formData.append('files', state.file.files[i])
     }
     formData.append('text', state.text)
+    formData.append('history', JSON.stringify(state.history))
     state.text = ''
     const res = await http.post('/api/image', formData)
     state.messages.push({
       role: 'assistant',
-      content: res.data.data,
+      content: res.data.data.text,
     })
+    state.history = res.data.data.history
+    console.log(state.history)
     state.loading = false
     state.file.value = ''
   }
@@ -102,8 +115,16 @@
     state.images = []
     state.file.value = ''
     state.text = ''
-    const res = await http.post('/api/image/reset')
-    console.log(res.data)
+    state.history = [
+      {
+        role: 'user',
+        content: [{ type: 'text', text: '用中文回答用户问题' }],
+      },
+      {
+        role: 'user',
+        content: [{ type: 'text', text: '你是端点科技医疗影像助手' }],
+      },
+    ]
     ElMessage.success('重置成功')
   }
 </script>

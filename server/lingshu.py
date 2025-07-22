@@ -34,36 +34,11 @@ messages = [
             {"type": "text", "text": "你是端点科技医疗影像助手"},
         ],
     },
+    {"role": "assistant", "content": [{"type": "text", "text": "AI回答"}]},
 ]
 
 
-def set_message(images, text):
-    msg = {"role": "user", "content": []}
-    for img in images:
-        msg["content"].append({"type": "image", "image": img})
-    msg["content"].append({"type": "text", "text": text})
-    messages.append(msg)
-
-
-def reset_message():
-    global messages
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "用中文回答用户问题"},
-            ],
-        },
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "你是端点科技医疗影像助手"},
-            ],
-        },
-    ]
-
-
-def output():
+def output(messages):
     # Preparation for inference
     text = processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
@@ -90,7 +65,5 @@ def output():
         clean_up_tokenization_spaces=False,
     )
     text = output_text[0]
-
-    messages.append({"role": "assistant", "content": text})
 
     return text
