@@ -2,7 +2,7 @@
   <div class="title">医学影像</div>
   <div class="input">
     <el-form label-width="auto">
-      <el-form-item label="影像">
+      <el-form-item label="操作">
         <input type="file" ref="file" @change="fileChange" class="file" accept="image/*" multiple />
         <el-button type="primary" @click="openfile">上传图片</el-button>
         <el-button type="primary" @click="submit" :loading="state.loading">提交</el-button>
