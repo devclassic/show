@@ -5,6 +5,7 @@
   </div>
   <div class="buttons">
     <el-button type="primary" :loading="state.loading" @click="submit">辅助诊疗</el-button>
+    <el-button type="primary" @click="record">{{ state.btnRecordText }}</el-button>
     <el-button type="primary" @click="clean">清空内容</el-button>
   </div>
   <div ref="content" class="content">
@@ -19,11 +20,13 @@
   import { reactive, useTemplateRef, nextTick } from 'vue'
   import markdownit from 'markdown-it'
   import http from '../../../utils/http'
+  import asr from '../../../utils/asr'
 
   const state = reactive({
     contentRef: useTemplateRef('content'),
     loading: false,
     text: '',
+    btnRecordText: '开始收音',
     messages: [
       { role: 'user', content: '你好' },
       { role: 'ai', content: '你好' },
@@ -62,6 +65,39 @@
     })
     state.text = ''
     state.loading = false
+  }
+
+  asr.ontext = text => {
+    console.log(text)
+    state.text = text
+  }
+
+  let isRecoding = false
+
+  function record() {
+    if (!isRecoding) {
+      asr.start(
+        () => {
+          ElMessage.success('开始收音')
+          state.btnRecordText = '停止收音'
+          state.status = '正在收音...'
+          isRecoding = true
+        },
+        () => {
+          ElMessage.error('收音错误')
+          state.status = ''
+          state.btnRecordText = '开始收音'
+          isRecoding = false
+        },
+      )
+    } else {
+      asr.stop(() => {
+        ElMessage.success('停止收音')
+        state.status = ''
+        state.btnRecordText = '开始收音'
+        isRecoding = false
+      })
+    }
   }
 </script>
 

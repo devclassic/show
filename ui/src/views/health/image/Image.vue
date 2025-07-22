@@ -3,10 +3,15 @@
   <div class="input">
     <el-form label-width="auto">
       <el-form-item label="影像">
-        <input type="file" ref="file" class="file" accept="image/*" multiple />
+        <input type="file" ref="file" @change="fileChange" class="file" accept="image/*" multiple />
         <el-button type="primary" @click="openfile">上传图片</el-button>
         <el-button type="primary" @click="submit" :loading="state.loading">提交</el-button>
         <el-button type="primary" @click="reset">重置</el-button>
+      </el-form-item>
+      <el-form-item v-if="state.images.length" label="影像" class="imgitem">
+        <span v-for="url of state.images" class="item">
+          <img :src="url" height="100" class="img" />
+        </span>
       </el-form-item>
       <el-form-item label="提示词">
         <el-input
@@ -25,6 +30,11 @@
         assistant: item.role === 'assistant',
       }"
       class="item">
+      <div v-if="item.images?.length" class="msgimg">
+        <span v-for="url of item.images" class="msgimgitme">
+          <img :src="url" height="100" class="img" />
+        </span>
+      </div>
       {{ item.content }}
     </div>
   </div>
@@ -38,6 +48,8 @@
   const state = reactive({
     loading: false,
     file: useTemplateRef('file'),
+    files: [],
+    images: [],
     text: '',
     messages: [],
   })
@@ -50,12 +62,26 @@
     state.file.click()
   }
 
+  function fileChange() {
+    state.images = []
+    state.files = state.file.files
+    for (const file of state.files) {
+      const reader = new FileReader()
+      reader.onload = e => {
+        state.images.push(e.target.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   async function submit() {
     state.loading = true
     state.messages.push({
       role: 'user',
+      images: state.images,
       content: state.text,
     })
+    state.images = []
     const formData = new FormData()
     for (let i = 0; i < state.file.files.length; i++) {
       formData.append('files', state.file.files[i])
@@ -73,6 +99,7 @@
 
   async function reset() {
     state.messages = []
+    state.images = []
     state.file.value = ''
     state.text = ''
     const res = await http.post('/api/image/reset')
@@ -95,6 +122,15 @@
   .file {
     width: 0;
     height: 0;
+  }
+
+  .imgitem {
+    line-height: 0;
+    margin-bottom: 0;
+  }
+
+  .img {
+    margin-right: 10px;
   }
 
   .result {

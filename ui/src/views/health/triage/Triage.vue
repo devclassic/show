@@ -19,10 +19,18 @@
     </el-form>
   </div>
   <div class="buttons">
-    <input ref="file" type="file" class="file" />
+    <input ref="file" type="file" @change="fileChange" class="file" />
     <el-button type="primary" @click="openFile">门诊数据</el-button>
     <el-button type="primary" @click="submit" :loading="state.loading">智能导诊</el-button>
     <el-button type="primary" @click="clean">清空内容</el-button>
+  </div>
+  <div v-if="state.files.length" class="files">
+    <div v-for="item of state.files" class="item">
+      <el-icon class="icon">
+        <Link />
+      </el-icon>
+      {{ item.name }}
+    </div>
   </div>
   <div v-if="state.result" v-html="state.result" class="content"></div>
 </template>
@@ -39,6 +47,7 @@
     age: 30,
     text: '',
     fileRef: useTemplateRef('file'),
+    files: [],
     result: '',
   })
 
@@ -50,6 +59,11 @@
 
   function openFile() {
     state.fileRef.click()
+  }
+
+  function fileChange() {
+    console.log(state.fileRef.files)
+    state.files = state.fileRef.files
   }
 
   async function submit() {
@@ -97,6 +111,21 @@
     width: 0;
     height: 0;
     opacity: 0;
+  }
+
+  .files {
+    margin-top: 10px;
+  }
+
+  .files .item {
+    color: #606266;
+    font-size: 12px;
+    border: 1px solid #cccccc;
+    padding: 10px;
+  }
+
+  .files .icon {
+    vertical-align: middle;
   }
 
   .content {

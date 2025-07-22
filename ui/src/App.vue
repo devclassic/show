@@ -14,7 +14,7 @@
       </template>
     </el-dialog>
 
-    <el-menu :default-active="route.path" :router="true" mode="horizontal">
+    <el-menu :default-active="route.path" :router="true" mode="horizontal" menu-trigger="click">
       <el-menu-item index="/">首页</el-menu-item>
       <el-sub-menu index="/voice">
         <template #title>智能语音</template>
@@ -92,11 +92,6 @@
     margin: 10px auto 10px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
-  }
-
-  .el-menu-item,
-  .el-sub-menu__title {
-    font-size: 16px;
   }
 
   .main {

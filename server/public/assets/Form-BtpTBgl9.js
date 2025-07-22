@@ -1,4 +1,4 @@
-import{r as w,a as d,c as x,b as f,d as c,e as t,w as a,E as g,t as p,i as y,F as U,o as V,f as z,j as E,g as i}from"./index-C2VwTE3s.js";import{h as N,E as k}from"./http-K1XqM7fZ.js";import{_ as F}from"./_plugin-vue_export-helper-DlAUqK2U.js";const R={class:"buttons"},S={class:"status"},T={key:0,class:"result"},v={__name:"Form",setup(B){const e=w({btnRecordText:"开始收音",status:"",result:"",form:{xm:"",nl:"",xb:"",sfzh:"",lxfs:"",zz:"",zs:"",jws:"",grjzs:""}});d.ontext=async u=>{e.result=u,e.status="正在处理...";let l=`
+import{r as w,a as d,c as x,b as f,d as c,e as t,w as a,E as g,t as p,i as y,F as U,o as V,f as z,j as E,g as i}from"./index-K_sVz8sl.js";import{h as N,E as k}from"./http-BQI7cToF.js";import{_ as F}from"./_plugin-vue_export-helper-DlAUqK2U.js";const R={class:"buttons"},S={class:"status"},T={key:0,class:"result"},v={__name:"Form",setup(B){const e=w({btnRecordText:"开始收音",status:"",result:"",form:{xm:"",nl:"",xb:"",sfzh:"",lxfs:"",zz:"",zs:"",jws:"",grjzs:""}});d.ontext=async u=>{e.result=u,e.status="正在处理...";let l=`
     <text>${u}</text>
     请分析<text>中的内容
     以JSON的形式输出，输出的JSON遵守以下的格式：
