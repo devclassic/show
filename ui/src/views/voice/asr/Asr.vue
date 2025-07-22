@@ -13,6 +13,7 @@
 <script setup>
   import { reactive } from 'vue'
   import asr from '../../../utils/asr'
+  import http from '../../../utils/http'
 
   const state = reactive({
     btnRecordText: '开始收音',
@@ -20,10 +21,10 @@
     result: '',
   })
 
-  asr.ontext = text => {
-    console.log(text)
-    state.result = text
-  }
+  // asr.ontext = text => {
+  //   console.log(text)
+  //   state.result = text
+  // }
 
   let isRecoding = false
 
@@ -44,11 +45,23 @@
         },
       )
     } else {
-      asr.stop(() => {
+      asr.stop(async () => {
         ElMessage.success('停止收音')
-        state.status = ''
+        state.status = '正在处理...'
         state.btnRecordText = '开始收音'
         isRecoding = false
+        //处理语音上传
+        const blob = asr.getWAVBlob()
+        const file = new File([blob], 'audio.wav')
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await http.post('/api/asr', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        state.status = ''
+        state.result = res.data.data[0].text
       })
     }
   }

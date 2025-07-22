@@ -97,7 +97,7 @@
         const file = new File([blob], 'audio.wav')
         const formData = new FormData()
         formData.append('file', file)
-        const res = await http.post('/api/asrm', formData, {
+        const res = await http.post('/api/asr', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

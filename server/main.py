@@ -134,10 +134,10 @@ async def check(request: Request):
     return {"success": True, "message": "内涵质控成功", "data": text}
 
 
-@app.post("/api/asrm")
+@app.post("/api/asr")
 async def asrm(file: UploadFile = File(...)):
     """
-    多人语音识别接口
+    语音识别接口
     """
     os.path.exists("uploads") or os.makedirs("uploads")
     filename = os.path.join("uploads", file.filename)
@@ -150,6 +150,9 @@ async def asrm(file: UploadFile = File(...)):
 
 @app.post("/api/asrg")
 async def asrg(request: Request):
+    """
+    多人语音生成接口
+    """
     data = await request.json()
     prompt = data.get("prompt")
     token = "app-8gtJR5XbwXB9FrpYuqpttMlc"
@@ -172,6 +175,9 @@ async def asrg(request: Request):
 
 @app.post("/api/form")
 async def form(request: Request):
+    """
+    语音表单接口
+    """
     data = await request.json()
     prompt = data.get("prompt")
     token = "app-j1f1vYJsSZTzXz0yIu4BMttA"

@@ -74,23 +74,27 @@ class Asr {
     )
   }
 
-  stop(callback = () => {}) {
+  stop(callback = () => {}, send = false) {
     console.log('录音结束')
-    const sendFileInChunks = (blob, chunkSize = 1024) => {
-      this.ws.send(JSON.stringify({ is_speaking: true }))
-      let start = 0
-      const totalChunks = Math.ceil(blob.size / chunkSize)
-      for (let i = 0; i < totalChunks; i++) {
-        const end = start + chunkSize
-        const chunk = blob.slice(start, end)
-        this.ws.send(chunk)
-        start = end
+    if (send) {
+      const sendFileInChunks = (blob, chunkSize = 1024) => {
+        this.ws.send(JSON.stringify({ is_speaking: true }))
+        let start = 0
+        const totalChunks = Math.ceil(blob.size / chunkSize)
+        for (let i = 0; i < totalChunks; i++) {
+          const end = start + chunkSize
+          const chunk = blob.slice(start, end)
+          this.ws.send(chunk)
+          start = end
+        }
+        this.ws.send(JSON.stringify({ is_speaking: false }))
       }
-      this.ws.send(JSON.stringify({ is_speaking: false }))
+      this.recorder.stop()
+      const blob = this.recorder.getWAVBlob()
+      sendFileInChunks(blob)
+    } else {
+      this.recorder.stop()
     }
-    this.recorder.stop()
-    const blob = this.recorder.getWAVBlob()
-    sendFileInChunks(blob)
     callback()
   }
 
