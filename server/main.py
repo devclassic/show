@@ -149,7 +149,9 @@ async def asrm(file: UploadFile = File(...)):
     filename = os.path.join("uploads", file.filename)
     with open(filename, "wb") as f:
         shutil.copyfileobj(file.file, f)
-    res = model.generate(input=filename)
+
+    res = await asyncio.get_event_loop().run_in_executor(None, model.generate, filename)
+
     os.remove(filename)
     return {"success": True, "message": "多人语音识别成功", "data": res}
 
