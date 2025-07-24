@@ -214,8 +214,9 @@ async def updcm(files: List[UploadFile] = File([])):
     上传DCM文件接口
     """
     basedir = "public/uploads/dcm/"
-    updir = basedir + str(uuid.uuid4())
-    downdir = basedir + str(uuid.uuid4())
+    rd = str(uuid.uuid4())
+    updir = basedir + "endcm_" + rd
+    downdir = basedir + "dedcm_" + rd
     os.path.exists(updir) or os.makedirs(updir)
 
     for file in files:
@@ -248,11 +249,11 @@ async def image(
     """
     影像识别接口
     """
-    os.path.exists("uploads") or os.makedirs("uploads")
+    os.path.exists("public/uploads/temp") or os.makedirs("public/uploads/temp")
     images = []
     for file in files:
         _, ext = os.path.splitext(file.filename)
-        filename = os.path.join("uploads", f"{uuid.uuid4()}{ext}")
+        filename = os.path.join("public/uploads/temp", f"{uuid.uuid4()}{ext}")
         with open(filename, "wb") as f:
             shutil.copyfileobj(file.file, f)
             images.append(filename)
