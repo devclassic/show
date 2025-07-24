@@ -2,6 +2,11 @@
   <div class="title">医学影像</div>
   <div class="input">
     <el-form label-width="auto">
+      <el-form-item v-if="state.images.length" label="影像" class="imgitem">
+        <span v-for="url of state.images" class="item">
+          <img :src="url" height="100" class="img" />
+        </span>
+      </el-form-item>
       <el-form-item label="操作">
         <input type="file" ref="file" @change="fileChange" class="file" multiple />
         <input type="file" ref="filedcm" @change="fileDcmChange" class="file" multiple />
@@ -11,11 +16,6 @@
         </el-button>
         <el-button type="primary" @click="submit" :loading="state.loading">提交</el-button>
         <el-button type="primary" @click="reset">重置</el-button>
-      </el-form-item>
-      <el-form-item v-if="state.images.length" label="影像" class="imgitem">
-        <span v-for="url of state.images" class="item">
-          <img :src="url" height="100" class="img" />
-        </span>
       </el-form-item>
       <el-form-item label="提示词">
         <el-input

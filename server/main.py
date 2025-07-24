@@ -35,8 +35,8 @@ async def triage(file: UploadFile = File(...), text: str = Form(...)):
     分诊导诊接口
     """
     token = os.getenv("TOKEN_ZHINENGDAOZHEN")
-    os.path.exists("uploads") or os.makedirs("uploads")
-    filename = os.path.join("uploads", file.filename)
+    os.path.exists("public/uploads/triage") or os.makedirs("public/uploads/triage")
+    filename = os.path.join("public/uploads/triage", file.filename)
     with open(filename, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -147,8 +147,8 @@ async def asrm(file: UploadFile = File(...)):
     """
     语音识别接口
     """
-    os.path.exists("uploads") or os.makedirs("uploads")
-    filename = os.path.join("uploads", file.filename)
+    os.path.exists("public/uploads/audio") or os.makedirs("public/uploads/audio")
+    filename = os.path.join("public/uploads/audio", file.filename)
     with open(filename, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
