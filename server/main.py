@@ -11,6 +11,8 @@ from typing import List
 import lingshu
 import dotenv
 from asr import model
+import dicom2jpg
+import glob
 
 dotenv.load_dotenv()
 
@@ -206,9 +208,42 @@ async def form(request: Request):
     return {"success": True, "message": "语音拆分成功", "data": text}
 
 
+@app.post("/api/updcm")
+async def updcm(files: List[UploadFile] = File([])):
+    """
+    上传DCM文件接口
+    """
+    basedir = "public/uploads/dcm/"
+    updir = basedir + str(uuid.uuid4())
+    downdir = basedir + str(uuid.uuid4())
+    os.path.exists(updir) or os.makedirs(updir)
+
+    for file in files:
+        filename = os.path.join(updir, f"{file.filename}.dcm")
+        with open(filename, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+
+    try:
+        dicom2jpg.dicom2png(origin=updir, target_root=downdir, multiprocessing=False)
+        paths = glob.glob(downdir + "/**/*.png", recursive=True)
+        images = []
+        for path in paths:
+            images.append(path.replace("\\", "/").replace("public/", "/"))
+        return {
+            "success": True,
+            "message": "上传DCM成功",
+            "data": {"images": images, "paths": paths},
+        }
+    except:
+        return {"success": False, "message": "处理DCM失败"}
+
+
 @app.post("/api/image")
 async def image(
-    files: List[UploadFile] = File([]), text: str = Form(), history: str = Form()
+    files: List[UploadFile] = File([]),
+    text: str = Form(),
+    history: str = Form(),
+    paths: str = Form(""),
 ):
     """
     影像识别接口
@@ -224,8 +259,14 @@ async def image(
 
     messages = json.loads(history)
     msg = {"role": "user", "content": []}
+
     for img in images:
         msg["content"].append({"type": "image", "image": img})
+
+    paths = paths.split(",") if paths.strip() else []
+    for path in paths:
+        msg["content"].append({"type": "image", "image": path})
+
     msg["content"].append({"type": "text", "text": text})
     messages.append(msg)
 

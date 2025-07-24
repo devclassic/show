@@ -3,8 +3,12 @@
   <div class="input">
     <el-form label-width="auto">
       <el-form-item label="操作">
-        <input type="file" ref="file" @change="fileChange" class="file" accept="image/*" multiple />
-        <el-button type="primary" @click="openfile">上传图片</el-button>
+        <input type="file" ref="file" @change="fileChange" class="file" multiple />
+        <input type="file" ref="filedcm" @change="fileDcmChange" class="file" multiple />
+        <el-button type="primary" :loading="state.uploading" @click="openfile">上传图片</el-button>
+        <el-button type="primary" :loading="state.uploading" @click="openfiledcm">
+          上传DCM
+        </el-button>
         <el-button type="primary" @click="submit" :loading="state.loading">提交</el-button>
         <el-button type="primary" @click="reset">重置</el-button>
       </el-form-item>
@@ -41,13 +45,16 @@
 </template>
 
 <script setup>
-  import { reactive, useTemplateRef, onMounted } from 'vue'
+  import { reactive, useTemplateRef } from 'vue'
   import http from '../../../utils/http'
-  import { ElMessage } from 'element-plus'
+
+  const baseURL = import.meta.env.VITE_API_BASE_URL ?? ''
 
   const state = reactive({
     loading: false,
+    uploading: false,
     file: useTemplateRef('file'),
+    filedcm: useTemplateRef('filedcm'),
     files: [],
     images: [],
     text: '',
@@ -62,13 +69,19 @@
         content: [{ type: 'text', text: '你是端点科技医疗影像助手' }],
       },
     ],
+    paths: [],
   })
-  
+
   function openfile() {
     state.file.click()
   }
 
+  function openfiledcm() {
+    state.filedcm.click()
+  }
+
   function fileChange() {
+    state.uploading = true
     state.images = []
     state.files = state.file.files
     for (const file of state.files) {
@@ -78,6 +91,23 @@
       }
       reader.readAsDataURL(file)
     }
+    state.uploading = false
+  }
+
+  async function fileDcmChange() {
+    state.uploading = true
+    const formData = new FormData()
+    for (const file of state.filedcm.files) {
+      formData.append('files', file)
+    }
+    const res = await http.post('/api/updcm', formData)
+    if (res.data.success) {
+      state.images = res.data.data.images.map(item => baseURL + item)
+      state.paths = res.data.data.paths
+    } else {
+      ElMessage.error(res.data.message)
+    }
+    state.uploading = false
   }
 
   async function submit() {
@@ -94,6 +124,7 @@
     }
     formData.append('text', state.text)
     formData.append('history', JSON.stringify(state.history))
+    formData.append('paths', state.paths)
     state.text = ''
     const res = await http.post('/api/image', formData)
     state.messages.push({
@@ -103,12 +134,15 @@
     state.history = res.data.data.history
     state.loading = false
     state.file.value = ''
+    state.filedcm.value = ''
+    state.paths = []
   }
 
   async function reset() {
     state.messages = []
     state.images = []
     state.file.value = ''
+    state.filedcm.value = ''
     state.text = ''
     state.history = [
       {
