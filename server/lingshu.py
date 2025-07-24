@@ -65,5 +65,4 @@ def output(messages):
         clean_up_tokenization_spaces=False,
     )
     text = output_text[0]
-
     return text
