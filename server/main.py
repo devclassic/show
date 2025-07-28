@@ -77,7 +77,6 @@ async def triage(file: UploadFile = File(...), text: str = Form(...)):
         return res.json()
 
     fileid = await upload_file(filename, "demo")
-    print(fileid)
     result = await run_workflow(fileid, text, "demo")
     os.remove(filename)
     text = result.get("data").get("outputs").get("text")

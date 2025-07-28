@@ -5,17 +5,22 @@ import torch
 
 # We recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-    "models/lingshu",
     # "lingshu-medical-mllm/Lingshu-7B",
-    torch_dtype=torch.bfloat16,
+    # torch_dtype=torch.bfloat16,
     # attn_implementation="flash_attention_2",
-    device_map="cuda",
+    "models/lingshu",
+    torch_dtype="auto",
+    device_map="auto",
+    offload_folder="cache",
 )
 
 processor = AutoProcessor.from_pretrained(
-    "models/lingshu",
     # "lingshu-medical-mllm/Lingshu-7B",
+    "models/lingshu",
     use_fast=True,
+    torch_dtype="auto",
+    device_map="auto",
+    offload_folder="cache",
 )
 
 # model.save_pretrained("cache")
