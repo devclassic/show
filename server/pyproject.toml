@@ -3,16 +3,16 @@ name = "server"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 dependencies = [
     "accelerate>=1.9.0",
     "dicom2jpg>=0.1.10",
-    "fastapi[all]>=0.115.13",
+    "fastapi[all]>=0.116.1",
     "funasr>=1.2.6",
     "httpx>=0.28.1",
     "invoke>=2.2.0",
-    "pyinstaller>=6.14.1",
-    "python-dotenv>=1.1.0",
+    "pyinstaller>=6.14.2",
+    "python-dotenv>=1.1.1",
     "qwen-vl-utils>=0.0.11",
     "torch>=2.7.1",
     "torchaudio>=2.7.1",
@@ -21,10 +21,10 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-torch = [{ index = "pytorch-cu128" }]
-torchvision = [{ index = "pytorch-cu128" }]
+torch = [{ index = "pytorch-cu118" }]
+torchvision = [{ index = "pytorch-cu118" }]
 
 [[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128" # 确认此 URL 是否存在
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
 explicit = true
