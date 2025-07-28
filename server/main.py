@@ -8,9 +8,9 @@ import json
 import asyncio
 import shutil
 from typing import List
+from asr import model
 import lingshu
 import dotenv
-from asr import model
 import dicom2jpg
 import glob
 

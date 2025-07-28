@@ -11,7 +11,7 @@ model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     "models/lingshu",
     torch_dtype="auto",
     device_map="auto",
-    offload_folder="cache",
+    # offload_folder="cache",
 )
 
 processor = AutoProcessor.from_pretrained(
@@ -20,7 +20,7 @@ processor = AutoProcessor.from_pretrained(
     use_fast=True,
     torch_dtype="auto",
     device_map="auto",
-    offload_folder="cache",
+    # offload_folder="cache",
 )
 
 # model.save_pretrained("cache")
