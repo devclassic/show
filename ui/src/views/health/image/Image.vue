@@ -39,7 +39,7 @@
           <img :src="url" height="100" class="img" />
         </span>
       </div>
-      {{ item.content }}
+      <div v-html="item.content"></div>
     </div>
   </div>
 </template>
@@ -47,8 +47,10 @@
 <script setup>
   import { reactive, useTemplateRef } from 'vue'
   import http from '../../../utils/http'
+  import markdownit from 'markdown-it'
 
   const baseURL = import.meta.env.VITE_API_BASE_URL ?? ''
+  const md = markdownit()
 
   const state = reactive({
     loading: false,
@@ -61,12 +63,13 @@
     messages: [],
     history: [
       {
-        role: 'user',
-        content: [{ type: 'text', text: '用中文回答用户问题' }],
-      },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: '你是端点科技医疗影像助手' }],
+        role: 'system',
+        content: [
+          {
+            type: 'text',
+            text: '你是端点科技医疗影像助手，你需要根据用户的症状和影像，给出诊断建议和治疗建议。用中文回答用户问题。',
+          },
+        ],
       },
     ],
     paths: [],
@@ -129,7 +132,7 @@
     const res = await http.post('/api/image', formData)
     state.messages.push({
       role: 'assistant',
-      content: res.data.data.text,
+      content: md.render(res.data.data.text),
     })
     state.history = res.data.data.history
     state.loading = false
@@ -146,12 +149,13 @@
     state.text = ''
     state.history = [
       {
-        role: 'user',
-        content: [{ type: 'text', text: '用中文回答用户问题' }],
-      },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: '你是端点科技医疗影像助手' }],
+        role: 'system',
+        content: [
+          {
+            type: 'text',
+            text: '你是端点科技医疗影像助手，你需要根据用户的症状和影像，给出诊断建议和治疗建议。用中文回答用户问题。',
+          },
+        ],
       },
     ]
     ElMessage.success('重置成功')

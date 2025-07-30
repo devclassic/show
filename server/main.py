@@ -9,7 +9,7 @@ import asyncio
 import shutil
 from typing import List
 from asr import model
-import lingshu
+import medgemma
 import dotenv
 import dicom2jpg
 import glob
@@ -271,7 +271,7 @@ async def image(
     messages.append(msg)
 
     result = await asyncio.get_event_loop().run_in_executor(
-        None, lingshu.output, messages
+        None, medgemma.output, messages
     )
 
     messages.append(
