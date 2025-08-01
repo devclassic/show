@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "accelerate>=1.9.0",
+    "bitsandbytes>=0.46.1",
     "dicom2jpg>=0.1.10",
     "fastapi[all]>=0.116.1",
     "funasr>=1.2.6",
