@@ -1,25 +1,31 @@
-from transformers import pipeline
+from transformers import AutoProcessor, AutoModelForImageTextToText
 import torch
 
-pipe = pipeline(
-    task="image-text-to-text",
-    model="models/medgemma-4b-it",
+model_id = "models/medgemma-4b-it"
+
+model = AutoModelForImageTextToText.from_pretrained(
+    model_id,
+    attn_implementation="sdpa",
+    torch_dtype=torch.bfloat16,
     device_map="auto",
-    torch_dtype=torch.float16,
-    model_kwargs={
-        "load_in_4bit": True,
-        "bnb_4bit_compute_dtype": torch.float16,
-        "bnb_4bit_use_double_quant": True,
-        "bnb_4bit_quant_type": "nf4",
-    },
 )
 
+processor = AutoProcessor.from_pretrained(model_id, use_fast=True)
+
 messages = [
-    {"role": "system", "content": [{"type": "text", "text": "你是一位医疗影像专家"}]},
+    {
+        "role": "system",
+        "content": [
+            {
+                "type": "text",
+                "text": "你是一位全科医疗影像专家，你的任务是根据输入的影像和文本描述，输出专业的诊断结果。",
+            }
+        ],
+    },
     {
         "role": "user",
         "content": [
-            {"type": "image", "image": "111.jpg"},
+            {"type": "image", "image": "1.jpg"},
             {"type": "text", "text": "分析一下这张片子"},
         ],
     },
@@ -27,6 +33,19 @@ messages = [
 
 
 def output(messages):
-    output = pipe(text=messages, max_new_tokens=10000)
-    result = output[0]["generated_text"][-1]["content"]
-    return result
+    inputs = processor.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        tokenize=True,
+        return_dict=True,
+        return_tensors="pt",
+    ).to(model.device, dtype=torch.bfloat16)
+
+    input_len = inputs["input_ids"].shape[-1]
+
+    with torch.inference_mode():
+        generation = model.generate(**inputs, max_new_tokens=4096, do_sample=False)
+        generation = generation[0][input_len:]
+
+    decoded = processor.decode(generation, skip_special_tokens=True)
+    return decoded
