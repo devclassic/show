@@ -6,4 +6,5 @@ model = AutoModel(
     vad_model="./models/funasr/fsmn-vad/iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
     punc_model="./models/funasr/ct-punc/iic/punc_ct-transformer_cn-en-common-vocab471067-large",
     spk_model="./models/funasr/cam++/iic/speech_campplus_sv_zh-cn_16k-common",
+    hotword="./hotwords.txt",
 )
