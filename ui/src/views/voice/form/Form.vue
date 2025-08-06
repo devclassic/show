@@ -112,8 +112,8 @@
           "grjzs":<个人家族史>
         }
         如果内容中没有对应的信息，请用""代替。
-        所有用到的数字都用阿拉伯数字。
         只输出JSON不要输出其他内容。
+        JSON内容中的数字使用阿拉伯数字。
         `
         res = await http.post('/api/form', { prompt })
         let json = res.data.data.replace(/<think>[\s\S]*?<\/think>/g, '')
