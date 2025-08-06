@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{c as t,o as c}from"./index-1kvfw-El.js";const o={},a={class:"title"};function s(r,_){return c(),t("div",a,"端点科技AI功能展示")}const f=e(o,[["render",s],["__scopeId","data-v-a993ea2a"]]);export{f as default};
