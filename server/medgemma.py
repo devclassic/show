@@ -1,16 +1,35 @@
 from transformers import AutoProcessor, AutoModelForImageTextToText
 import torch
 
-model_id = "models/medgemma-4b-it"
+model = None
+processor = None
 
-model = AutoModelForImageTextToText.from_pretrained(
-    model_id,
-    attn_implementation="sdpa",
-    torch_dtype=torch.bfloat16,
-    device_map="auto",
-)
 
-processor = AutoProcessor.from_pretrained(model_id, use_fast=True)
+def init():
+    global model
+    global processor
+    model_id = "models/medgemma-4b-it"
+    model = AutoModelForImageTextToText.from_pretrained(
+        model_id,
+        attn_implementation="sdpa",
+        torch_dtype=torch.bfloat16,
+        device_map="auto",
+    )
+    processor = AutoProcessor.from_pretrained(model_id, use_fast=True)
+
+
+def uninit():
+    global model
+    global processor
+    model = None
+    processor = None
+    torch.cuda.empty_cache()
+    torch.cuda.ipc_collect()
+
+
+def is_init():
+    return model is not None and processor is not None
+
 
 messages = [
     {

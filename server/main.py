@@ -238,6 +238,27 @@ async def updcm(files: List[UploadFile] = File([])):
         return {"success": False, "message": "处理DCM失败"}
 
 
+@app.post("/api/init-image-model")
+async def init_image_model():
+    medgemma.init()
+    return {"success": True, "message": "初始化影像模型成功"}
+
+
+@app.post("/api/uninit-image-model")
+async def uninit_image_model():
+    medgemma.uninit()
+    return {"success": True, "message": "卸载影像模型成功"}
+
+
+@app.post("/api/is-image-model-init")
+async def is_image_model_init():
+    return {
+        "success": True,
+        "message": "影像模型是否初始化",
+        "data": medgemma.is_init(),
+    }
+
+
 @app.post("/api/image")
 async def image(
     files: List[UploadFile] = File([]),

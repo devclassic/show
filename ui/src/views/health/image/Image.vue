@@ -2,6 +2,22 @@
   <div class="title">医学影像</div>
   <div class="input">
     <el-form label-width="auto">
+      <el-form-item label="模型">
+        <el-button
+          type="primary"
+          @click="initModel"
+          :loading="state.loadingInitModel"
+          :disabled="state.isLoadingModel">
+          加载模型
+        </el-button>
+        <el-button
+          type="primary"
+          @click="uninitModel"
+          :loading="state.loadingUninitModel"
+          :disabled="!state.isLoadingModel">
+          卸载模型
+        </el-button>
+      </el-form-item>
       <el-form-item v-if="state.images.length" label="影像" class="imgitem">
         <span v-for="url of state.images" class="item">
           <img :src="url" height="100" class="img" />
@@ -10,12 +26,28 @@
       <el-form-item label="操作">
         <input type="file" ref="file" @change="fileChange" class="file" multiple />
         <input type="file" ref="filedcm" @change="fileDcmChange" class="file" multiple />
-        <el-button type="primary" :loading="state.uploading" @click="openfile">上传图片</el-button>
-        <el-button type="primary" :loading="state.uploading" @click="openfiledcm">
+        <el-button
+          type="primary"
+          :loading="state.uploading"
+          @click="openfile"
+          :disabled="!state.isLoadingModel">
+          上传图片
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="state.uploading"
+          @click="openfiledcm"
+          :disabled="!state.isLoadingModel">
           上传DCM
         </el-button>
-        <el-button type="primary" @click="submit" :loading="state.loading">提交</el-button>
-        <el-button type="primary" @click="reset">重置</el-button>
+        <el-button
+          type="primary"
+          @click="submit"
+          :loading="state.loading"
+          :disabled="!state.isLoadingModel">
+          提交
+        </el-button>
+        <el-button type="primary" @click="reset" :disabled="!state.isLoadingModel">重置</el-button>
       </el-form-item>
       <el-form-item label="提示词">
         <el-input
@@ -45,7 +77,7 @@
 </template>
 
 <script setup>
-  import { reactive, useTemplateRef } from 'vue'
+  import { reactive, onMounted, useTemplateRef } from 'vue'
   import http from '../../../utils/http'
   import markdownit from 'markdown-it'
 
@@ -53,6 +85,9 @@
   const md = markdownit()
 
   const state = reactive({
+    loadingInitModel: false,
+    loadingUninitModel: false,
+    isLoadingModel: false,
     loading: false,
     uploading: false,
     file: useTemplateRef('file'),
@@ -74,6 +109,36 @@
     ],
     paths: [],
   })
+
+  onMounted(async () => {
+    const res = await http.post('/api/is-image-model-init')
+    state.isLoadingModel = res.data.data
+  })
+
+  async function initModel() {
+    state.loadingInitModel = true
+    const res = await http.post('/api/init-image-model')
+    if (res.data.success) {
+      ElMessage.success('模型加载成功')
+      state.isLoadingModel = true
+    } else {
+      ElMessage.error(res.data.message)
+    }
+    state.loadingInitModel = false
+  }
+
+  async function uninitModel() {
+    state.loadingUninitModel = true
+    const res = await http.post('/api/uninit-image-model')
+    if (res.data.success) {
+      ElMessage.success('模型卸载成功')
+      state.isLoadingModel = false
+      reset()
+    } else {
+      ElMessage.error(res.data.message)
+    }
+    state.loadingUninitModel = false
+  }
 
   function openfile() {
     state.file.click()
@@ -158,7 +223,6 @@
         ],
       },
     ]
-    ElMessage.success('重置成功')
   }
 </script>
 
