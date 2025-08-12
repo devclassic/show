@@ -98,7 +98,7 @@
     messages: [],
     history: [
       {
-        role: 'system',
+        role: 'user',
         content: [
           {
             type: 'text',
@@ -214,7 +214,7 @@
     state.text = ''
     state.history = [
       {
-        role: 'system',
+        role: 'user',
         content: [
           {
             type: 'text',
