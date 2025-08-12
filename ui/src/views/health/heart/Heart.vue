@@ -2,10 +2,20 @@
   <div class="title">心脏超声</div>
   <div class="buttons">
     <input type="file" class="file" ref="file" accept="video/mp4" />
-    <el-button type="primary" :loading="state.loading" @click="submit" class="upload">
-      上传超声视频
-    </el-button>
+    <el-button type="primary" :loading="state.loading" @click="submit">上传超声视频</el-button>
+    <el-button type="primary" :disabled="state.loading" @click="reset">重置</el-button>
     <span class="status">{{ state.status }}</span>
+  </div>
+  <div class="video" v-if="state.src">
+    <video
+      ref="video"
+      :src="state.src"
+      controls
+      loop
+      muted
+      autoplay
+      width="224"
+      height="224"></video>
   </div>
   <div v-html="state.result" class="result"></div>
   <div v-html="state.suggestion" class="suggestion"></div>
@@ -21,6 +31,8 @@
   const state = reactive({
     result: '',
     file: useTemplateRef('file'),
+    video: useTemplateRef('video'),
+    src: '',
     loading: false,
     status: '',
     suggestion: '',
@@ -31,6 +43,7 @@
       if (state.file.files.length === 0) {
         return
       }
+      state.src = URL.createObjectURL(state.file.files[0])
       state.loading = true
       state.status = '正在分析...'
       const formData = new FormData()
@@ -60,6 +73,13 @@
 
   const submit = async () => {
     state.file.click()
+  }
+
+  const reset = () => {
+    state.file.value = null
+    state.src = ''
+    state.result = ''
+    state.suggestion = ''
   }
 </script>
 
@@ -96,6 +116,10 @@
   }
 
   .buttons {
+    margin-top: 10px;
+  }
+
+  .video {
     margin-top: 10px;
   }
 
