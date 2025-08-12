@@ -14,6 +14,7 @@
         <el-menu-item index="/health/assist">辅助诊疗</el-menu-item>
         <el-menu-item index="/health/check">内涵质控</el-menu-item>
         <el-menu-item index="/health/image">医学影像</el-menu-item>
+        <el-menu-item index="/health/heart">心脏超声</el-menu-item>
       </el-sub-menu>
     </el-menu>
     <div class="main">

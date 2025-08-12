@@ -10,6 +10,7 @@ import shutil
 from typing import List
 from asr import model
 import medgemma
+import panecho
 import dotenv
 import dicom2jpg
 import glob
@@ -312,6 +313,20 @@ async def image(
         "message": "影像识别成功",
         "data": {"text": result, "history": messages},
     }
+
+
+@app.post("/api/heart")
+async def hert(request: Request, file: UploadFile = File(...)):
+    """
+    心脏超声接口
+    """
+    os.path.exists("public/uploads/heart") or os.makedirs("public/uploads/heart")
+    filename = os.path.join("public/uploads/heart", file.filename)
+    with open(filename, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+    res = await asyncio.get_event_loop().run_in_executor(None, panecho.output, filename)
+    os.remove(filename)
+    return {"success": True, "message": "心脏超声成功", "data": res}
 
 
 app.mount("/", StaticFiles(directory="public", html=True))

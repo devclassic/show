@@ -35,6 +35,10 @@ const router = createRouter({
       path: '/health/image',
       component: () => import('../views/health/image/Image.vue'),
     },
+    {
+      path: '/health/heart',
+      component: () => import('../views/health/heart/Heart.vue'),
+    },
   ],
 })
 
