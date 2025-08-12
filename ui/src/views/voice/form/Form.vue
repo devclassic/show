@@ -113,7 +113,7 @@
         }
         如果内容中没有对应的信息，请用""代替。
         只输出JSON不要输出其他内容。
-        JSON内容中的数字使用阿拉伯数字。
+        JSON内容中的数字不要使用中文数字，只能使用阿拉伯数字。
         `
         res = await http.post('/api/form', { prompt })
         let json = res.data.data.replace(/<think>[\s\S]*?<\/think>/g, '')
