@@ -329,6 +329,73 @@ async def hert(request: Request, file: UploadFile = File(...)):
     return {"success": True, "message": "心脏超声成功", "data": res}
 
 
+@app.post("/api/analysis")
+async def analysis(files: List[UploadFile] = File([]), prompt: str = Form("")):
+    """
+    数据分析接口
+    """
+    paths = []
+    updir = "public/uploads/analysis/"
+    os.path.exists(updir) or os.makedirs(updir)
+    for file in files:
+        filename = os.path.join(updir, f"{file.filename}")
+        with open(filename, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+        paths.append(filename)
+
+    token = os.getenv("TOKEN_SHUJUFENXI")
+
+    async def upload_files(file_paths, user="demo"):
+        url = f"{apibase}/files/upload"
+        headers = {"Authorization": f"Bearer {token}"}
+
+        ids = []
+
+        async with AsyncClient(timeout=None) as client:
+            for path in file_paths:
+                with open(path, "rb") as f:
+                    files = {
+                        "file": (os.path.basename(path), f, "application/octet-stream")
+                    }
+                    data = {"user": user}
+                    res = await client.post(
+                        url, headers=headers, files=files, data=data
+                    )
+                    ids.append(res.json()["id"])
+        return ids
+
+    async def run_workflow_with_files(file_ids, inputs=None):
+        url = f"{apibase}/workflows/run"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "inputs": {
+                "files": [
+                    {
+                        "type": "document",
+                        "transfer_method": "local_file",
+                        "upload_file_id": fid,
+                    }
+                    for fid in file_ids
+                ],
+                **(inputs or {}),
+            },
+            "response_mode": "blocking",
+            "user": "demo",
+        }
+
+        async with AsyncClient(timeout=None) as client:
+            response = await client.post(url, headers=headers, json=payload)
+            return response.json()
+
+    file_ids = await upload_files(paths)
+    res = await run_workflow_with_files(file_ids, {"prompt": prompt})
+    return {"success": True, "message": "数据分析成功", "data": res}
+
+
 app.mount("/", StaticFiles(directory="public", html=True))
 
 if __name__ == "__main__":

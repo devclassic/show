@@ -39,6 +39,10 @@ const router = createRouter({
       path: '/health/heart',
       component: () => import('../views/health/heart/Heart.vue'),
     },
+    {
+      path: '/health/analysis',
+      component: () => import('../views/health/analysis/Analysis.vue'),
+    },
   ],
 })
 

@@ -10,6 +10,7 @@
       </el-sub-menu>
       <el-sub-menu index="/health">
         <template #title>医疗相关</template>
+        <el-menu-item index="/health/analysis">数据分析</el-menu-item>
         <el-menu-item index="/health/triage">分诊导诊</el-menu-item>
         <el-menu-item index="/health/assist">辅助诊疗</el-menu-item>
         <el-menu-item index="/health/check">内涵质控</el-menu-item>
