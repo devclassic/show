@@ -64,7 +64,6 @@
       formData.append('files', file)
     }
     const res = await http.post('/api/analysis', formData)
-    console.log(res.data)
     const result = res.data.data.data.outputs.text.replace(/<think>[\s\S]*?<\/think>/g, '')
     state.result = md.render(result)
     state.loading = false
