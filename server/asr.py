@@ -6,6 +6,5 @@ model = AutoModel(
     punc_model="./models/funasr/ct-punc/iic/punc_ct-transformer_cn-en-common-vocab471067-large",
     spk_model="./models/funasr/cam++/iic/speech_campplus_sv_zh-cn_16k-common",
     disable_update=True,
-    trust_remote_code=True,
     hotword="./hotwords.txt",
 )
