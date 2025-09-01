@@ -6,10 +6,12 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "accelerate>=1.9.0",
+    "bitsandbytes>=0.47.0",
     "dicom2jpg>=0.1.10",
     "fastapi[all]>=0.116.1",
     "funasr>=1.2.6",
     "httpx>=0.28.1",
+    "huggingface-hub>=0.34.4",
     "humanize>=4.12.3",
     "invoke>=2.2.0",
     "pandas>=2.3.1",

@@ -1,4 +1,4 @@
-from transformers import AutoProcessor, AutoModelForImageTextToText
+from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
 import torch
 
 model = None
@@ -8,12 +8,24 @@ processor = None
 def init():
     global model
     global processor
+
     model_id = "models/medgemma-4b-it"
+
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_use_double_quant=True,
+        llm_int8_enable_fp32_cpu_offload=True,
+    )
+
     model = AutoModelForImageTextToText.from_pretrained(
         model_id,
+        quantization_config=bnb_config,
         attn_implementation="sdpa",
         torch_dtype=torch.bfloat16,
         device_map="auto",
+        trust_remote_code=True,
     )
     processor = AutoProcessor.from_pretrained(model_id, use_fast=True)
 
