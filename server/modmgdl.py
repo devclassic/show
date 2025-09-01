@@ -1,6 +1,7 @@
 import os
 
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+os.environ["HF_TOKEN"] = "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"
 
 from huggingface_hub import snapshot_download
 
