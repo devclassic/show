@@ -9,7 +9,7 @@ def init():
     global model
     global processor
 
-    model_id = "models/medgemma-4b-it"
+    model_id = "models/medgemma-27b-it"
 
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -24,7 +24,7 @@ def init():
         quantization_config=bnb_config,
         attn_implementation="sdpa",
         torch_dtype=torch.bfloat16,
-        device_map="auto",
+        device_map=None,
         trust_remote_code=True,
     )
     processor = AutoProcessor.from_pretrained(model_id, use_fast=True)
