@@ -1,5 +1,6 @@
 from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
 import torch
+import gc
 
 model = None
 processor = None
@@ -36,7 +37,7 @@ def uninit():
     model = None
     processor = None
     torch.cuda.empty_cache()
-    torch.cuda.ipc_collect()
+    gc.collect()
 
 
 def is_init():
