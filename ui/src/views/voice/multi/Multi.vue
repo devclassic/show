@@ -17,6 +17,7 @@
         <el-select v-model="state.type" placeholder="生成类型" @change="typeChange">
           <el-option label="请选择" value="请选择" />
           <el-option label="病例生成" value="病例生成" />
+          <el-option label="问询笔录" value="问询笔录" />
           <el-option label="自定义" value="自定义" />
         </el-select>
       </el-form-item>
@@ -40,6 +41,7 @@
   import markdownit from 'markdown-it'
   import asr from '../../../utils/asr'
   import http from '../../../utils/http'
+  import { format } from 'date-fns'
 
   const state = reactive({
     btnRecordText: '开始收音',
@@ -61,6 +63,29 @@
         break
       case '病例生成':
         state.prompt = '<对话>为患者和医生的对话，根据<对话>生成一份完成的病例'
+        break
+      case '问询笔录':
+        state.prompt = `<对话>为问询对话。
+<模板>
+询问笔录
+时间 ____ 年 __ 月 __ 日 __ 时 __ 分 至 ____ 年 __ 月 __ 日 __ 时 __ 分
+地点 _____
+询问人（签名） _____                    
+记录人（签名） _____                                   
+被询问人 ___ 性别 _ 年龄 __ 岁出生日期 ____ 年 __ 月 __ 日                
+身份证件种类及号码 __________________ 是 否 人大代表      
+户籍地 __________                                                                                          
+现住址 __________                                               
+联系方式 __________                                             
+（口头传唤∕被扭送∕自动投案的被询问/讯问人 __ 月 __ 日 __ 时 __ 分到达，__ 月 __ 日 __ 时 __ 分离开，本人签名 __________ ）。
+问：
+答：
+</模板>
+<模板>为问询笔录模板。
+请根据<对话>内容，根据<模板>生成一份问询笔录。
+现在时间为${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}。
+如果<对话>中没有<模板>的内容则留空。
+`
         break
       case '自定义':
         state.prompt = ''
